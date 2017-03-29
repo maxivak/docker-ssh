@@ -22,7 +22,7 @@ exitOnConfigError = (errorMessage) ->
   console.error "Configuration error: #{errorMessage}"
   process.exit(1)
 
-exitOnConfigError 'No CONTAINER specified'                    unless container
+#exitOnConfigError 'No CONTAINER specified'                    unless container
 exitOnConfigError 'No KEYPATH specified'                      unless keypath
 exitOnConfigError 'No CONTAINER_SHELL specified'              unless shell
 exitOnConfigError 'No AUTH_MECHANISM specified'               unless authMechanism
@@ -36,8 +36,27 @@ sessionFactory = handlerFactory container, shell
 sshServer = new ssh2.Server options, (client, info) ->
   session = sessionFactory.instance()
   log.info clientIp: info.ip, 'Client connected'
-  client.on 'authentication', authenticationHandler
-  client.on 'ready', -> client.on('session', session.handler)
+
+  session.sessdata.username = ""
+  session.sessdata.container = ""
+
+  if authMechanism=="multiContainerAuth"
+    client.on 'authentication', authenticationHandler(session)
+
+    client.on 'ready', -> client.on('session', session.myhandler())
+  else
+    # default - not depend on session
+    client.on 'authentication', authenticationHandler
+
+    client.on 'ready', -> client.on('session', session.handler)
+
+
+
+  #client.on 'ready', -> client.on('session', session.handler)
+  #client.on 'ready', -> client.on('session', -> log.info {u: username}, "do ready")
+  #client.on 'ready', -> client.on('session', session.myhandler(session.sessdata.username))
+
+
   client.on 'end', ->
     log.info clientIp: info.ip, 'Client disconnected'
     session.close()
