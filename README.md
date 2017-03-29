@@ -10,7 +10,8 @@ Run one Docker SSH server through which you can connect to multiple Docker conta
 Features:
 * multiContainerAuth authentication method.
 
- 
+
+# Quick start
 
 * run SSH server in Docker container
 ```
