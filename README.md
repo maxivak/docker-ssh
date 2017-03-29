@@ -13,6 +13,11 @@ Features:
 
 # Quick start
 
+* build Docker image
+```
+docker build -t my-ssh github.com/maxivak/docker-ssh
+```
+
 * run SSH server in Docker container
 ```
 docker run -d -p 2222:22 \
