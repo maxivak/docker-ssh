@@ -15,7 +15,7 @@ Features:
 
 * build Docker image
 ```
-docker build -t my-ssh github.com/maxivak/docker-ssh
+docker build -t docker-ssh github.com/maxivak/docker-ssh
 ```
 
 * run SSH server in Docker container
@@ -24,7 +24,7 @@ docker run -d -p 2222:22 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e AUTH_MECHANISM=multiContainerAuth \
   -e AUTH_TUPLES="u1:pwd1:container1;u2:pwd2:container2" \
-  maxivak/docker-ssh
+  docker-ssh
 ```
 
 * or specify users with passwords and corresponding containers in a separate file
@@ -34,7 +34,7 @@ docker run -d -p 2222:22 \
   -e AUTH_MECHANISM=multiContainerAuth \
   -e AUTH_TUPLES_FILE="/auth" \
   -v /path/to/local/file/auth:/auth \
-  maxivak/docker-ssh
+  docker-ssh
 ```
 
 where file `auth` contains data like this:
