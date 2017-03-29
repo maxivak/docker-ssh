@@ -14,13 +14,18 @@ header = (container) ->
   " ###############################################################\r\n" +
   "\r\n"
 
+# TODO: should be changed. it doesn't need param container here
 module.exports = (container, shell) ->
   instance: ->
+
+    # init
     session = null
     channel = null
     stream = null
     resizeTerm = null
-    session = null
+    username = null
+
+
 
     closeChannel = ->
       channel.exit(0) if channel
@@ -28,7 +33,105 @@ module.exports = (container, shell) ->
     stopTerm = ->
       stream.end() if stream
 
+    # return
+    sessdata: {}
+
     close: -> stopTerm()
+
+    myhandler: ->
+      #log.info {self: this}, 'myhandler init'
+      log.info {u: this.sessdata.username, container: this.sessdata.container}, 'myhandler - data in session'
+
+      # set container from session
+      container = this.sessdata.container
+
+      # return handler function
+      (accept, reject) ->
+        #
+        session = accept()
+
+        termInfo = null
+
+        session.once 'exec', (accept, reject, info) ->
+          log.info {container: container, command: info.command}, 'Exec'
+
+          channel = accept()
+          _container = docker.getContainer container
+          _container.exec {Cmd: [shell, '-c', info.command], AttachStdin: true, AttachStdout: true, AttachStderr: true, Tty: false}, (err, exec) ->
+            if err
+              log.error {container: container}, 'Exec error', err
+              return closeChannel()
+            exec.start {stdin: true, Tty: true}, (err, _stream) ->
+              stream = _stream
+              stream.on 'data', (data) ->
+                channel.write data.toString()
+              stream.on 'error', (err) ->
+                log.error {container: container}, 'Exec error', err
+                closeChannel()
+              stream.on 'end', ->
+                log.info {container: container}, 'Exec ended'
+                closeChannel()
+              channel.on 'data', (data) ->
+                stream.write data
+              channel.on 'error', (e) ->
+                log.error {container: container}, 'Channel error', e
+              channel.on 'end', ->
+                log.info {container: container}, 'Channel exited'
+                stopTerm()
+
+        session.on 'err', (err) ->
+          log.error {container: container}, err
+
+        session.on 'shell', (accept, reject) ->
+          #
+          log.info {container: container}, 'Opening shell'
+          channel = accept()
+          channel.write "#{header container}"
+
+          _container = docker.getContainer container
+          _container.exec {Cmd: [shell], AttachStdin: true, AttachStdout: true, Tty: true}, (err, exec) ->
+            if err
+              log.error {container: container}, 'Exec error', err
+              return closeChannel()
+            exec.start {stdin: true, Tty: true}, (err, _stream) ->
+              stream = _stream
+              forwardData = false
+              setTimeout (-> forwardData = true; stream.write '\n'), 500
+              stream.on 'data', (data) ->
+                if forwardData
+                  channel.write data.toString()
+              stream.on 'error', (err) ->
+                log.error {container: container}, 'Terminal error', err
+                closeChannel()
+              stream.on 'end', ->
+                log.info {container: container}, 'Terminal exited'
+                closeChannel()
+
+              stream.write 'export TERM=linux;\n'
+              stream.write 'export PS1="\\w $ ";\n\n'
+
+              channel.on 'data', (data) ->
+                stream.write data
+              channel.on 'error', (e) ->
+                log.error {container: container}, 'Channel error', e
+              channel.on 'end', ->
+                log.info {container: container}, 'Channel exited'
+                stopTerm()
+
+              resizeTerm = (termInfo) ->
+                if termInfo then exec.resize {h: termInfo.rows, w: termInfo.cols}, -> undefined
+              resizeTerm termInfo # initially set the current size of the terminal
+
+        session.on 'pty', (accept, reject, info) ->
+          x = accept()
+          termInfo = info
+
+        session.on 'window-change', (accept, reject, info) ->
+          log.info {container: container}, 'window-change', info
+          resizeTerm info
+
+
+
     handler: (accept, reject) ->
       session = accept()
       termInfo = null
