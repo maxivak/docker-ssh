@@ -52,7 +52,7 @@ module.exports = (session) ->
         return ctx.accept()
       else
         log.warn {user: ctx.username, password: ctx.password}, 'Authentication failed'
-    ctx.reject()
+    ctx.reject(['password'])
 
 
   #
