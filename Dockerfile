@@ -11,7 +11,7 @@ RUN apk --update add python3 make g++ nodejs \
 
 
 # make coffee executable
-RUN chmod +x ./node_modules/coffee-script/bin/coffee
+RUN chmod +x ./node_modules/coffeescript/bin/coffee
 
 # Connect to container with name/id
 ENV CONTAINER=
