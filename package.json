@@ -1,8 +1,8 @@
 {
   "name": "docker-ssh",
-  "version": "1.0.0",
+  "version": "0.5",
   "description": "Provides SSH capabilities to any Docker container",
-  "repository": "https://github.com/jeroenpeeters/docker-ssh",
+  "repository": "https://github.com/g-alfieri/docker-ssh",
   "main": "server.coffee",
   "scripts": {
     "start": "./node_modules/forever/bin/forever -c ./node_modules/coffeescript/bin/coffee server.coffee | ./node_modules/bunyan/bin/bunyan",
