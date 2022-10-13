@@ -5,7 +5,7 @@
   "repository": "https://github.com/jeroenpeeters/docker-ssh",
   "main": "server.coffee",
   "scripts": {
-    "start": "./node_modules/forever/bin/forever -c ./node_modules/coffee-script/bin/coffee server.coffee | ./node_modules/bunyan/bin/bunyan",
+    "start": "./node_modules/forever/bin/forever -c ./node_modules/coffeescript/bin/coffee server.coffee | ./node_modules/bunyan/bin/bunyan",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
