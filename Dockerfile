@@ -4,7 +4,7 @@ FROM mhart/alpine-node:16
 WORKDIR /src
 ADD . .
 
-RUN apk --update add python make g++ nodejs \
+RUN apk --update add python3 make g++ nodejs \
   && npm install \
   && apk del make gcc g++ python \
   && rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp
