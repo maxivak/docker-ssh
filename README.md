@@ -1,7 +1,7 @@
 # Docker-SSH
 
 SSH Server for Docker containers
-This is an extension of [Docker-SSH](https://github.com/jeroenpeeters/docker-ssh) which adds  capability of logging in into multiple Docker containers.
+This is an extension of [Docker-SSH](https://github.com/maxivak/docker-ssh) which adds  capability of logging in into multiple Docker containers updated for 2022
 
 Run one Docker SSH server through which you can connect to multiple Docker containers depending on user.
 
@@ -15,7 +15,7 @@ Features:
 
 * build Docker image
 ```
-docker build -t docker-ssh github.com/maxivak/docker-ssh
+docker build -t docker-ssh github.com/g-alfieri/docker-ssh
 ```
 
 * run SSH server in Docker container
