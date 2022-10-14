@@ -31,6 +31,6 @@ ENV HTTP_ENABLED=true
 # HTTP Port
 ENV HTTP_PORT=8022
 
-EXPOSE 22 8022
+EXPOSE 22
 
 CMD ["npm", "start"]
